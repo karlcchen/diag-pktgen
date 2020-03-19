@@ -1,0 +1,58 @@
+1. Network connection
+	We use the daisy chain connection on NSi170 board.
+
+	Port 1~4: X0 X1 X2 X3
+	Port 5: Uplink port
+	Using two network cables, one connected between port 1 and port 2. Another
+	between 3 and 4.
+ 
+	<packet flow>
+	  CPU(eth0.1) <-> port 5 <-> port 4 <-> port3 <-> port 2 <-> port 1 <-> port 5 <-> CPU(eth0.4)
+
+2. Test procedures
+	With above network connection you can just run below python script to start the test
+	eg:
+	  diag# /diag/switch_test.py
+	
+	This script will do some necessary system/switch initialization and trigger pktgen to transimit
+	100000 broadcast packets to CPU. So we will expect send/receive 100000 pkts on uplink port.
+	For example you will see similar screen output as below.
+	
+	Summary: port-5
+    InUnicast     = 00000000
+    InMulticast   = 00000013
+    InBroadcast   = 00100000
+    InTotal       = 100013
+    OutUnicast    = 00000000
+    OutMulticast  = 00000013
+    OutBroadcast  = 00100000
+    OutTotal      = 100013
+	
+	Notice:
+	  Such information is from pketgen and it only means the packet transimition action is done successfully.
+	So now user can only use visual checking on above mib counter to determine the switch test is passed or failed.
+	
+	eg:
+	  Result: OK: 1318455(c1308089+d10366) usec, 100000 (4096byte,0frags)
+	  75846pps 2485Mb/sec (2485321728bps) errors: 0
+
+3. Getting the performance number
+	To get the switch test performace number and you can follow below steps.(Please running /diag/switch_test.py first)
+	
+	eg:
+	diag# cd /proc/net/pktgen
+	diag# ls
+	eth0@1      kpktgend_0  pgctrl
+	diag# echo "count 0" > ./eth0@1
+	diag# echo "pkt_size 1514" > ./eth0@1
+	diag# echo "start" > ./pgctrl &
+	diag# /diag/snwl_iftop.py
+	TX: 765.575200Mbps  RX: 765.744800Mbps
+	TX: 765.865600Mbps  RX: 765.744800Mbps
+	TX: 765.224000Mbps  RX: 765.236000Mbps
+
+	There is a easy way to push the pktgen to transmit the line rate. Just using jumbo frame.
+	
+	eg:
+	diag# echo "pkt_size 4096" > ./eth0@1
+	

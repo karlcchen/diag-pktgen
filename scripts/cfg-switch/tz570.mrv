@@ -1,0 +1,25 @@
+#
+# Marvell switch configuration file
+# for nsi-170 board
+#
+port setQMode 1 2
+port setQMode 2 2
+port setQMode 3 2
+port setQMode 4 2
+port setQMode 5 2
+phy powerDown 2 disable
+phy powerDown 3 disable
+phy powerDown 4 disable
+port setPortState 2 3
+port setPortState 3 3
+port setPortState 4 3
+port setDefVid  1 1
+port setDefVid  2 2
+port setDefVid  3 3
+port setDefVid  4 4
+port setDiscardUTagged 5 1
+vlan addEntry -fid 1 -vid 1 -TagP {3 1 3 3 3 2 3}
+vlan addEntry -fid 1 -vid 2 -TagP {3 3 1 1 3 3 3}
+vlan addEntry -fid 1 -vid 3 -TagP {3 3 1 1 3 3 3}
+vlan addEntry -fid 1 -vid 4 -TagP {3 3 3 3 1 2 3}
+
